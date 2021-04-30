@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 @Entity('settings')
 class Setting {
   @PrimaryColumn()
-  id: string;
+  private id: string;
 
   @Column()
   username: string;
@@ -20,7 +20,7 @@ class Setting {
   chat: boolean;
 
   @CreateDateColumn()
-  created_at: Date;
+  private created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;

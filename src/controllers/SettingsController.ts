@@ -1,21 +1,49 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
-import { SettingsRepository } from "../repositories/SettingsRepository";
+import { CreateSettingService } from "../services/CreateSettingService";
+import { ListSettingByUsername } from "../services/ListSettingByUsername";
+import { UpdateSettingService } from "../services/UpdateSettingService";
 
 class SettingsController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { username, chat } = request.body;
+    try {
+      const { username, chat } = request.body;
+      const createSettingService = new CreateSettingService()
 
-    const settingsRepository = getCustomRepository(SettingsRepository)
+      const setting = await createSettingService.execute({
+        username,
+        chat
+      });
 
-    const setting = settingsRepository.create({
+      return response.status(201).json(setting)
+    } catch (err) {
+      return response.status(400).json({ error: err.message })
+    }
+  }
+
+  public async show(request: Request, response: Response): Promise<Response> {
+    const { username } = request.params;
+
+    const listSettingByUsername = new ListSettingByUsername()
+
+    const setting = await listSettingByUsername.execute({
+      username
+    })
+
+    return response.json(setting)
+  }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const { username } = request.params;
+    const { chat } = request.body;
+
+    const updateSettingService = new UpdateSettingService()
+
+    const setting = await updateSettingService.execute({
       username,
       chat
     })
 
-    await settingsRepository.save(setting)
-
-    return response.status(201).json(setting)
+    return response.json(setting)
   }
 }
 
